@@ -11,24 +11,31 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import atomicstryker.ruins.common.EventRuinTemplateSpawn;
+import atomicstryker.ruins.common.RuinData;
 import atomicstryker.ruins.common.RuinRuleAir;
 import atomicstryker.ruins.common.RuinTemplate;
 import atomicstryker.ruins.common.RuinTemplateLayer;
 import atomicstryker.ruins.common.RuinTemplateRule;
+import atomicstryker.ruins.common.RuinsMod;
 
 public class StructureSpawnEvent {
-	private int x, y, z;
+	private int x, y, z, rotation, chestX, chestY, chestZ;
 	private RuinTemplate template;
-	ArrayList<RuinTemplateRule> rules = new ArrayList<RuinTemplateRule>();
-	ArrayList<RuinTemplateLayer> layers = new ArrayList<RuinTemplateLayer>();
+	ArrayList<RuinTemplateRule> rules;
+	ArrayList<RuinTemplateLayer> layers;
+	private ArrayList<Integer> chestRules;
 
 	@SubscribeEvent
 	public void ruinSpawn(EventRuinTemplateSpawn event)
 	{
+		rules = new ArrayList<RuinTemplateRule>();
+		layers = new ArrayList<RuinTemplateLayer>();
+		chestRules = new ArrayList<Integer>();
 		try {
 			//get x, y, z and template for ruin
-			setXYZAndTemplate(event);
-			getTemplateRules();
+			getEventFields(event);
+			setChestRules();
+			findChestCoords();
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -40,7 +47,6 @@ public class StructureSpawnEvent {
 		String name = "";
 		if(template != null) name = template.getName();
 		System.out.println(name + " RUIN SPAWNED @ " + x + " " + y + " " + z);
-
 
 		World world = event.world;
 		int meta = 0;
@@ -67,8 +73,47 @@ public class StructureSpawnEvent {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void getTemplateRules()
-			throws NoSuchFieldException, IllegalAccessException {
+	private void findChestCoords() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		Field layersField = template.getClass().getDeclaredField("layers");
+		layersField.setAccessible(true);
+		layers.addAll((ArrayList<RuinTemplateLayer>) layersField.get(template));
+		for(int i=0;i<layers.size();i++) {
+			RuinTemplateLayer layer = layers.get(i);
+			Field layerField = layer.getClass().getDeclaredField("layer");
+			layerField.setAccessible(true);
+			int[][] layerCoords = (int[][]) layerField.get(layer);
+			printLayerCoords(layerCoords, i);
+		}
+	}
+
+	private void printLayerCoords(int[][] layerCoords, int layerNum) {
+		for(int i=0;i<layerCoords.length;i++) {
+			for(int j=0;j<layerCoords[i].length;j++) {
+				Integer layerId = layerCoords[i][j];
+				if(chestRules.contains(layerId)) {
+					System.out.println("Layer " + layerNum + " has chest at: "  + i + " " + j);
+					shiftCoords(j, layerNum, i);
+				}
+/*				for(int k=0;k<chestRules.size();k++) {
+					if(chestRules.get(k) == layerId) {
+						System.out.println("Chest has rule at " + i + " " + j);
+					}
+				}*/
+			}
+		}
+	}
+	
+	private void shiftCoords(int j, int layerNum, int i) {
+		RuinData data = template.getRuinData(x, y, z, rotation);
+		int x, y, z;
+		x = j + data.xMid;
+		y = layerNum + data.yMid;
+		z = i + data.zMid;
+		System.out.println("Anticipating chest at " + x + " " + y + " " + z);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void setChestRules() throws NoSuchFieldException, IllegalAccessException {
 		String[] blockStrings;
 		Field rulesField = template.getClass().getDeclaredField("rules");
 		rulesField.setAccessible(true);
@@ -82,14 +127,14 @@ public class StructureSpawnEvent {
 				for(int j=0;j<blockStrings.length;j++) {
 					if(blockStrings[j].toLowerCase().contains("chest")) {
 						System.out.println("Rule " + i + " contains 'chest' " + blockStrings[j]);
+						this.chestRules.add(i);
 					}
 				}
 			}
 		}
 	}
 
-	private void setXYZAndTemplate(EventRuinTemplateSpawn event)
-			throws IllegalAccessException {
+	private void getEventFields(EventRuinTemplateSpawn event) throws IllegalAccessException {
 		Field eventFields[] = event.getClass().getDeclaredFields();
 		for(int i=0;i<eventFields.length;i++) {
 			eventFields[i].setAccessible(true);
@@ -98,5 +143,6 @@ public class StructureSpawnEvent {
 		x = (int) eventFields[1].get(event);
 		y = (int) eventFields[2].get(event);
 		z = (int) eventFields[3].get(event);
+		rotation = eventFields[4].getInt(event);
 	}
 }
