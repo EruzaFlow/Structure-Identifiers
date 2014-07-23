@@ -20,6 +20,6 @@ public class StructureIds
     {
     	MinecraftForge.EVENT_BUS.register(new RuinSpawnEvent());
     	FMLCommonHandler.instance().bus().register(new UpdateChestEvent());
-    	MinecraftForge.EVENT_BUS.register(new StructureSpawnEvent());
+    	MinecraftForge.TERRAIN_GEN_BUS.register(new StructureSpawnEvent());
     }
 }

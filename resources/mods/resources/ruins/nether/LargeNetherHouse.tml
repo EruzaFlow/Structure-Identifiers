@@ -17,6 +17,7 @@ rule2=0,100,cobblestone,mossy_cobblestone
 rule3=1,50,cobblestone,mossy_cobblestone
 rule4=1,50,glowstone
 rule5=2,50,glowstone
+rule6=0,100,EasyChest
 
 layer
 2,2,2,2,2,2,2
@@ -30,7 +31,7 @@ endlayer
 
 layer
 3,3,3,3,3,3,3
-3,0,0,0,0,0,3
+3,0,0,0,0,6,3
 3,0,0,0,0,0,3
 3,0,0,0,0,0,3
 3,0,0,0,0,0,3
