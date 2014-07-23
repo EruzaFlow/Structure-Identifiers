@@ -12,7 +12,7 @@ import atomicstryker.ruins.common.RuinTemplateLayer;
 import atomicstryker.ruins.common.RuinTemplateRule;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
-public class StructureSpawnEvent {
+public class RuinSpawnEvent {
 	private int x, y, z, rotation;
 	private RuinTemplate template;
 	ArrayList<RuinTemplateRule> rules;
@@ -24,6 +24,9 @@ public class StructureSpawnEvent {
 	@SubscribeEvent
 	public void ruinSpawn(EventRuinTemplateSpawn event)
 	{
+		if(event.isCanceled()) {
+			System.out.println("EVENT IS CANCELED");
+		}
 		layers = new ArrayList<RuinTemplateLayer>();
 		chestRules = new ArrayList<Integer>();
 		rules = new ArrayList<RuinTemplateRule>();

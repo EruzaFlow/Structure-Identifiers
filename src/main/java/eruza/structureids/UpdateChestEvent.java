@@ -70,7 +70,7 @@ public class UpdateChestEvent {
 		//Temp testing; adds a chest 10 blocks above origin of template
 		Block block = world.getBlock(x, y, z);
 		if(block != Blocks.chest) {
-			System.out.println("Block is not a chest?!??");
+			System.out.println("BLOCK IS NOT A CHEST");
 		}
 		TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
 		if (chest != null)
@@ -78,7 +78,7 @@ public class UpdateChestEvent {
 			ItemStack stack = null;
 
 			stack = new ItemStack(Items.paper);
-			stack.setStackDisplayName(name.replace(".tml", ""));
+			stack.setStackDisplayName(name.replace(".tml", "").replace("_", " "));
 			if (stack != null)
 			{
 				Random random = new Random();

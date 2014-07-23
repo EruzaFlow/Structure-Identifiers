@@ -15,7 +15,7 @@ public class StructureIds
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
-    	MinecraftForge.EVENT_BUS.register(new StructureSpawnEvent());
+    	MinecraftForge.EVENT_BUS.register(new RuinSpawnEvent());
     	FMLCommonHandler.instance().bus().register(new UpdateChestEvent());
     }
 }
