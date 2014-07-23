@@ -7,6 +7,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import eruza.structureids.ruins.RuinSpawnEvent;
 import eruza.structureids.ruins.UpdateChestEvent;
+import eruza.structureids.vanilla.StructureSpawnEvent;
 
 @Mod(modid = StructureIds.MODID, version = StructureIds.VERSION)
 public class StructureIds
@@ -19,5 +20,6 @@ public class StructureIds
     {
     	MinecraftForge.EVENT_BUS.register(new RuinSpawnEvent());
     	FMLCommonHandler.instance().bus().register(new UpdateChestEvent());
+    	MinecraftForge.EVENT_BUS.register(new StructureSpawnEvent());
     }
 }
