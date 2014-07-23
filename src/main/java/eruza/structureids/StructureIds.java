@@ -5,6 +5,8 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import eruza.structureids.ruins.RuinSpawnEvent;
+import eruza.structureids.ruins.UpdateChestEvent;
 
 @Mod(modid = StructureIds.MODID, version = StructureIds.VERSION)
 public class StructureIds

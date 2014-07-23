@@ -2,10 +2,10 @@
 # authoring Player: AtomicStryker
 
 weight=2
-embed_into_distance=0
+embed_into_distance=1
 acceptable_target_blocks=
 unacceptable_target_blocks=flowing_water,water,flowing_lava,lava
-dimensions=4,2,3
+dimensions=5,2,3
 allowable_overhang=0
 max_leveling=1
 leveling_buffer=0
@@ -19,10 +19,16 @@ rule3=0,100,minecraft:iron_bars-0
 rule4=0,100,Skull:0:0-4
 rule5=0,100,Skull:0:0-4
 rule6=0,100,EasyChest
+rule7=0,100,preserveBlock
+
+layer
+7,7,7
+7,6,7
+endlayer
 
 layer
 0,0,0
-0,6,0
+0,1,0
 endlayer
 
 layer

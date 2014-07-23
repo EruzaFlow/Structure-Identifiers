@@ -1,6 +1,7 @@
 # Created by Ruins mod version 12.8 Ingame Parser
 # authoring Player: AtomicStryker
 
+biomesToSpawnIn=birch forest,birch forest hills,birch forest hills m,birch forest m,extreme hills,extreme hills m,extreme hills+,extreme hills+ m,flower forest,forest,foresthills,plains
 weight=1
 embed_into_distance=1
 acceptable_target_blocks=

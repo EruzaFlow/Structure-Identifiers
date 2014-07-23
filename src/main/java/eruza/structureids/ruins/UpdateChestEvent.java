@@ -1,4 +1,4 @@
-package eruza.structureids;
+package eruza.structureids.ruins;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,23 +25,22 @@ public class UpdateChestEvent {
 
 	@SubscribeEvent
 	public void tickEvent(TickEvent.WorldTickEvent event) {
-		if(ruinData.size() > 0 && counter >= 0) counter++;
-		if(ruinData.size() == 0 && counter > 0) counter = 0;
+		if(ruinData.size() == 0) counter = 0;
 		if(event.phase == Phase.END) {
 			world = event.world;
 			Iterator<RuinData> it = ruinData.iterator();
 			while(it.hasNext())
 			{
+				counter++;
 				RuinData data = it.next();
-				if(findChestCoords(data)) {
-					System.out.println("COUNTER: " + counter);
-					deletedRuinData.add(data);
-				}
-				if(counter>100) {
-					System.out.println("ERROR: Counter >100");
-					System.out.println("Total ruins looking for chests: " + ruinData.size());
-					System.out.println("Current: " + data);
-					System.out.println("Removing " + data.name);
+				if(findChestCoords(data)) deletedRuinData.add(data);
+				else if(counter>50) {
+					if(data.yMin < 125) {
+						System.out.println("ERROR: Counter > 50");
+						System.out.println("Total ruins looking for chests: " + ruinData.size());
+						System.out.println("Current: " + data);
+						System.out.println("Removing " + data.name);
+					}
 					deletedRuinData.add(data);
 					counter = 0;
 				}
@@ -50,7 +49,12 @@ public class UpdateChestEvent {
 		}
 	}
 
-	//TODO Check if we need to subtract embed from y to get the bounding box correct
+	/**
+	 * Scans within the bounding box of data to find a chest
+	 * 
+	 * @param data
+	 * @return
+	 */
 	private boolean findChestCoords(RuinData data) {
 		for(int y=data.yMin;y<=data.yMax;y++) {
 			for(int x=data.xMin;x<=data.xMax;x++) {
@@ -66,8 +70,16 @@ public class UpdateChestEvent {
 		return false;
 	}
 
+	/**
+	 * Adds structure identifier item to chest.
+	 * Currently a piece of paper with the structure name set as the display name.
+	 * 
+	 * @param name
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
 	private void addItemToChest(String name, int x, int y, int z) {
-		//Temp testing; adds a chest 10 blocks above origin of template
 		Block block = world.getBlock(x, y, z);
 		if(block != Blocks.chest) {
 			System.out.println("BLOCK IS NOT A CHEST");
@@ -75,15 +87,10 @@ public class UpdateChestEvent {
 		TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
 		if (chest != null)
 		{
-			ItemStack stack = null;
-
-			stack = new ItemStack(Items.paper);
+			ItemStack stack = new ItemStack(Items.paper);
 			stack.setStackDisplayName(name.replace(".tml", "").replace("_", " "));
-			if (stack != null)
-			{
-				Random random = new Random();
-				chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), stack);
-			}
+			Random random = new Random();
+			chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), stack);
 
 		}
 		else {
