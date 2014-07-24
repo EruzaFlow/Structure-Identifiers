@@ -1,4 +1,4 @@
-package eruza.structureids.ruins;
+package eruza.structureids.vanilla;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,58 +11,54 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
-import atomicstryker.ruins.common.RuinData;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
-public class UpdateChestEvent {
+public class UpdateVanillaChest {
 	
-	public static CopyOnWriteArrayList<RuinData> ruinData = new CopyOnWriteArrayList<RuinData>();
-	private ArrayList<RuinData> deletedRuinData = new ArrayList<RuinData>();
+	public static CopyOnWriteArrayList<NamedBoundingBox> boundingBoxes = new CopyOnWriteArrayList<NamedBoundingBox>();
+	private ArrayList<NamedBoundingBox> deletedBoxes = new ArrayList<NamedBoundingBox>();
 	private World world;
 	private int counter;
 
 
 	@SubscribeEvent
 	public void tickEvent(TickEvent.WorldTickEvent event) {
-		if(ruinData.size() == 0) counter = 0;
+		if(boundingBoxes.size() == 0) counter = 0;
 		if(event.phase == Phase.END) {
 			world = event.world;
-			Iterator<RuinData> it = ruinData.iterator();
+			Iterator<NamedBoundingBox> it = boundingBoxes.iterator();
 			while(it.hasNext())
 			{
 				counter++;
-				RuinData data = it.next();
-				if(findChestCoords(data)) deletedRuinData.add(data);
-				else if(counter>50) {
-					if(data.yMin < 125) {
-						System.out.println("ERROR: Counter > 50");
-						System.out.println("Total ruins looking for chests: " + ruinData.size());
-						System.out.println("Current: " + data);
-						System.out.println("Removing " + data.name);
-					}
-					deletedRuinData.add(data);
+				NamedBoundingBox box = it.next();
+				if(findChestCoords(box)) deletedBoxes.add(box);
+				else if(counter>200) {
+						System.out.println("ERROR: Counter > 200");
+						System.out.println("Total ruins looking for chests: " + boundingBoxes.size());
+						System.out.println("Removing " + box);
+					deletedBoxes.add(box);
 					counter = 0;
 				}
 			}
-			ruinData.removeAll(deletedRuinData);
+			boundingBoxes.removeAll(deletedBoxes);
 		}
 	}
 
 	/**
 	 * Scans within the bounding box of data to find a chest
 	 * 
-	 * @param data
+	 * @param box
 	 * @return
 	 */
-	private boolean findChestCoords(RuinData data) {
-		for(int y=data.yMin;y<=data.yMax;y++) {
-			for(int x=data.xMin;x<=data.xMax;x++) {
-				for(int z=data.zMin;z<=data.zMax;z++) {
+	private boolean findChestCoords(NamedBoundingBox box) {
+		for(int y=box.minY;y<=box.maxY;y++) {
+			for(int x=box.minX;x<=box.maxX;x++) {
+				for(int z=box.minZ;z<=box.maxZ;z++) {
 					if(world.getBlock(x, y, z) == Blocks.chest) {
-						addItemToChest(data.name, x, y, z);
-						System.out.println("FOUND CHEST AT " + x + " " + y + " " + z + " in " + data);
+						addItemToChest(box.name, x, y, z);
+						System.out.println("FOUND CHEST AT " + x + " " + y + " " + z + " in " + box);
 						return true;
 					}
 				}
