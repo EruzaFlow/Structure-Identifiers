@@ -7,26 +7,25 @@ import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureStart;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
+import net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class ChunkPopulationEvent {
 	boolean flag = true;
 
 	@SubscribeEvent
-	public void populateEvent(PopulateChunkEvent event) {
-		testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.villageGenerator, "Village");
-		testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.mineshaftGenerator, "Mineshaft");
-		testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.strongholdGenerator, "Stronghold");
-		testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.scatteredFeatureGenerator, "Scattered Features");
+	public void populateEvent(PopulateChunkEvent.Populate event) {
+		testStructureAndUpdateChest(event, StructureSpawnEvent.villageGenerator, "Village");
+		testStructureAndUpdateChest(event, StructureSpawnEvent.mineshaftGenerator, "Mineshaft");
+		testStructureAndUpdateChest(event, StructureSpawnEvent.strongholdGenerator, "Stronghold");
+		testStructureAndUpdateChest(event, StructureSpawnEvent.scatteredFeatureGenerator, "Scattered Features");
 	}
 
-	private void testStructureAndUpdateChest(int chunkX, int chunkZ, MapGenBase generator, String name) {
+	private void testStructureAndUpdateChest(Populate event, MapGenBase generator, String name) {
 		try {
-			if(canStructureSpawn(chunkX, chunkZ, generator)) {
-				System.out.println(name.toUpperCase() + " CAN SPAWN");
-				NamedBoundingBox box = new NamedBoundingBox(getStructureInChunk(chunkX, chunkZ, generator), name);
-				System.out.println(box);
-				UpdateVanillaChest.boundingBoxes.add(box);
+			if(canStructureSpawn(event.chunkX, event.chunkZ, generator)) {
+				NamedBoundingBox box = new NamedBoundingBox(getStructureInChunk(event.chunkX, event.chunkZ, generator), name);
+				UpdateVanillaChest.addBox(box);
 			}
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();

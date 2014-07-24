@@ -37,7 +37,7 @@ public class UpdateChestEvent {
 				else if(counter>50) {
 					if(data.yMin < 125) {
 						System.out.println("ERROR: Counter > 50");
-						System.out.println("Total ruins looking for chests: " + ruinData.size());
+						System.out.println("Total ruin structures looking for chests: " + ruinData.size());
 						System.out.println("Current: " + data);
 						System.out.println("Removing " + data.name);
 					}

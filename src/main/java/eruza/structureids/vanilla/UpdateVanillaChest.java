@@ -17,7 +17,7 @@ import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class UpdateVanillaChest {
 
-	public static CopyOnWriteArrayList<NamedBoundingBox> boundingBoxes = new CopyOnWriteArrayList<NamedBoundingBox>();
+	private static CopyOnWriteArrayList<NamedBoundingBox> boundingBoxes = new CopyOnWriteArrayList<NamedBoundingBox>();
 	private ArrayList<NamedBoundingBox> deletedBoxes = new ArrayList<NamedBoundingBox>();
 	private World world;
 	private int counter;
@@ -38,7 +38,7 @@ public class UpdateVanillaChest {
 				if((box.name.equals("Scattered Features") || box.name.equals("Stronghold")) && findChestCoords(box)) deletedBoxes.add(box);
 				if(counter>200) {
 					System.out.println("ERROR: Counter > 200");
-					System.out.println("Total ruins looking for chests: " + boundingBoxes.size());
+					System.out.println("Total vanilla structures looking for chests: " + boundingBoxes.size());
 					System.out.println("Removing " + box);
 					deletedBoxes.add(box);
 					counter = 0;
@@ -86,7 +86,7 @@ public class UpdateVanillaChest {
 	}
 
 	private boolean findMineshaftRail(NamedBoundingBox box) {
-		//Change to minecart with chest on rail?
+		//TODO Change to minecart with chest on rail?
 		for(int y=box.minY;y<=box.maxY;y++) {
 			for(int x=box.minX;x<=box.maxX;x++) {
 				for(int z=box.minZ;z<=box.maxZ;z++) {
@@ -110,5 +110,17 @@ public class UpdateVanillaChest {
 		stack.setStackDisplayName(box.name);
 		Random random = new Random();
 		chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), stack);
+	}
+
+	public static void addBox(NamedBoundingBox box) {
+		if(boxHasNoIntersects(box)) {
+			boundingBoxes.add(box);
+		}
+	}
+
+	private static boolean boxHasNoIntersects(NamedBoundingBox box) {
+		Iterator<NamedBoundingBox> it = boundingBoxes.iterator();
+		while(it.hasNext()) if(box.intersectsWith(it.next())) return false;
+		return true;
 	}
 }
