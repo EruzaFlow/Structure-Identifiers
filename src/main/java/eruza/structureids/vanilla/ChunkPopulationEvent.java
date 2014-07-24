@@ -15,7 +15,7 @@ public class ChunkPopulationEvent {
 	@SubscribeEvent
 	public void populateEvent(PopulateChunkEvent event) {
 		testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.villageGenerator, "Village");
-		//testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.mineshaftGenerator, "Mineshaft");
+		testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.mineshaftGenerator, "Mineshaft");
 		testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.strongholdGenerator, "Stronghold");
 		testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.scatteredFeatureGenerator, "Scattered Features");
 	}

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -32,8 +33,10 @@ public class UpdateVanillaChest {
 			{
 				counter++;
 				NamedBoundingBox box = it.next();
-				if(findChestCoords(box)) deletedBoxes.add(box);
-				else if(counter>200) {
+				if(box.name.equals("Village") && findVillageRoad(box)) deletedBoxes.add(box);
+				if(box.name.equals("Mineshaft") && findMineshaftRail(box)) deletedBoxes.add(box);
+				if((box.name.equals("Scattered Features") || box.name.equals("Stronghold")) && findChestCoords(box)) deletedBoxes.add(box);
+				if(counter>200) {
 					System.out.println("ERROR: Counter > 200");
 					System.out.println("Total ruins looking for chests: " + boundingBoxes.size());
 					System.out.println("Removing " + box);
@@ -57,17 +60,55 @@ public class UpdateVanillaChest {
 				for(int z=box.minZ;z<=box.maxZ;z++) {
 					TileEntity tileEntity = world.getTileEntity(x, y, z);
 					if (tileEntity instanceof TileEntityChest) {
-						TileEntityChest chest = (TileEntityChest) tileEntity;
-						System.out.println("FOUND CHEST AT " + x + " " + y + " " + z + " in " + box);
-						ItemStack stack = new ItemStack(Items.paper);
-						stack.setStackDisplayName(box.name);
-						Random random = new Random();
-						chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), stack);
+						placeItemInChest(box, y, x, z);
 						return true;
 					}						
 				}
 			}
 		}
 		return false;
+	}
+
+	private boolean findVillageRoad(NamedBoundingBox box) {
+		int y = box.minY;
+		for(int x=box.minX;x<=box.maxX;x++) {
+			for(int z=box.minZ;z<=box.maxZ;z++) {
+				if (world.getBlock(x, y, z) == Blocks.gravel || world.getBlock(x, y, z) == Blocks.sandstone) {
+					y = y + 1;
+					if(world.getBlock(x, y, z) == Blocks.air && world.setBlock(x, y, z, Blocks.chest)) {
+						placeItemInChest(box, y, x, z);
+						return true;					
+					}					
+				}						
+			}
+		}
+		return false;
+	}
+
+	private boolean findMineshaftRail(NamedBoundingBox box) {
+		//Change to minecart with chest on rail?
+		for(int y=box.minY;y<=box.maxY;y++) {
+			for(int x=box.minX;x<=box.maxX;x++) {
+				for(int z=box.minZ;z<=box.maxZ;z++) {
+					if (world.getBlock(x, y, z) == Blocks.rail) {
+						x = x + 1;
+						if(world.getBlock(x, y, z) == Blocks.air && world.setBlock(x, y, z, Blocks.chest)) {
+							placeItemInChest(box, y, x, z);
+							return true;					
+						}					
+					}						
+				}
+			}
+		}
+		return false;
+	}
+
+	private void placeItemInChest(NamedBoundingBox box, int y, int x, int z) {
+		TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
+		System.out.println("FOUND CHEST AT " + x + " " + y + " " + z + " in " + box);
+		ItemStack stack = new ItemStack(Items.paper);
+		stack.setStackDisplayName(box.name);
+		Random random = new Random();
+		chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), stack);
 	}
 }
