@@ -13,32 +13,36 @@ public class ChunkPopulationEvent {
 	boolean flag = true;
 
 	@SubscribeEvent
-	public void populateEvent(PopulateChunkEvent event) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		//System.out.println("NEW populate chunk event");
-		//System.out.println("TYPE: " + event.type);
-		//System.out.println("Coords: " + event.chunkX + " " + event.chunkZ);
-		if(canStructureSpawn(event.chunkX, event.chunkZ, StructureSpawnEvent.villageGenerator)) {
-			System.out.println("VILLAGE CAN SPAWN");
-			NamedBoundingBox box = new NamedBoundingBox(getStructureInChunk(event.chunkX, event.chunkZ, StructureSpawnEvent.villageGenerator), "Village");
-			System.out.println(box);
-			UpdateVanillaChest.boundingBoxes.add(box);
-		}
-		if(canStructureSpawn(event.chunkX,event.chunkZ, StructureSpawnEvent.mineshaftGenerator)) {
-			System.out.println("MINESHAFT CAN SPAWN");
-			NamedBoundingBox box = new NamedBoundingBox(getStructureInChunk(event.chunkX, event.chunkZ, StructureSpawnEvent.mineshaftGenerator), "Mineshaft");
-			System.out.println(box);
-			UpdateVanillaChest.boundingBoxes.add(box);
-		}
-		if(canStructureSpawn(event.chunkX,event.chunkZ, StructureSpawnEvent.strongholdGenerator)) {
-			System.out.println("STRONGHOLD CAN SPAWN");
-			NamedBoundingBox box = new NamedBoundingBox(getStructureInChunk(event.chunkX, event.chunkZ, StructureSpawnEvent.strongholdGenerator), "Stronghold");
-			System.out.println(box);
-			UpdateVanillaChest.boundingBoxes.add(box);
+	public void populateEvent(PopulateChunkEvent event) {
+		testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.villageGenerator, "Village");
+		//testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.mineshaftGenerator, "Mineshaft");
+		testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.strongholdGenerator, "Stronghold");
+		testStructureAndUpdateChest(event.chunkX, event.chunkZ, StructureSpawnEvent.scatteredFeatureGenerator, "Scattered Features");
+	}
+
+	private void testStructureAndUpdateChest(int chunkX, int chunkZ, MapGenBase generator, String name) {
+		try {
+			if(canStructureSpawn(chunkX, chunkZ, generator)) {
+				System.out.println(name.toUpperCase() + " CAN SPAWN");
+				NamedBoundingBox box = new NamedBoundingBox(getStructureInChunk(chunkX, chunkZ, generator), name);
+				System.out.println(box);
+				UpdateVanillaChest.boundingBoxes.add(box);
+			}
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
 		}
 	}
 
 	@SuppressWarnings("rawtypes")
-	private boolean canStructureSpawn(int chunkX, int chunkZ, MapGenBase generator) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+	private boolean canStructureSpawn(int chunkX, int chunkZ, MapGenBase generator) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Class[] classes = new Class[2];
 		classes[0] = int.class;
 		classes[1] = int.class;

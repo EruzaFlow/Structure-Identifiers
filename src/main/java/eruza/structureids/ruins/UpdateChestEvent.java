@@ -5,10 +5,9 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
 import atomicstryker.ruins.common.RuinData;
@@ -17,7 +16,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class UpdateChestEvent {
-	
+
 	public static CopyOnWriteArrayList<RuinData> ruinData = new CopyOnWriteArrayList<RuinData>();
 	private ArrayList<RuinData> deletedRuinData = new ArrayList<RuinData>();
 	private World world;
@@ -60,9 +59,14 @@ public class UpdateChestEvent {
 		for(int y=data.yMin;y<=data.yMax;y++) {
 			for(int x=data.xMin;x<=data.xMax;x++) {
 				for(int z=data.zMin;z<=data.zMax;z++) {
-					if(world.getBlock(x, y, z) == Blocks.chest) {
-						addItemToChest(data.name, x, y, z);
-						System.out.println("FOUND CHEST AT " + x + " " + y + " " + z + " in " + data);
+					TileEntity tileEntity = world.getTileEntity(x, y, z);
+					if (tileEntity instanceof TileEntityChest) {
+						TileEntityChest chest = (TileEntityChest) tileEntity;
+						ItemStack stack = new ItemStack(Items.paper);
+						stack.setStackDisplayName(data.name.replace(".tml", "").replace("_", " "));
+						Random random = new Random();
+						chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), stack);
+						//System.out.println("FOUND CHEST AT " + x + " " + y + " " + z + " in " + data);
 						return true;
 					}
 				}
@@ -70,33 +74,4 @@ public class UpdateChestEvent {
 		}
 		return false;
 	}
-
-	/**
-	 * Adds structure identifier item to chest.
-	 * Currently a piece of paper with the structure name set as the display name.
-	 * 
-	 * @param name
-	 * @param x
-	 * @param y
-	 * @param z
-	 */
-	private void addItemToChest(String name, int x, int y, int z) {
-		Block block = world.getBlock(x, y, z);
-		if(block != Blocks.chest) {
-			System.out.println("BLOCK IS NOT A CHEST");
-		}
-		TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
-		if (chest != null)
-		{
-			ItemStack stack = new ItemStack(Items.paper);
-			stack.setStackDisplayName(name.replace(".tml", "").replace("_", " "));
-			Random random = new Random();
-			chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), stack);
-
-		}
-		else {
-			System.out.println("ERROR: No tile entity found at chest coords");
-		}
-	}
-
 }

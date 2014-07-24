@@ -9,6 +9,7 @@ import eruza.structureids.ruins.RuinSpawnEvent;
 import eruza.structureids.ruins.UpdateChestEvent;
 import eruza.structureids.vanilla.ChunkPopulationEvent;
 import eruza.structureids.vanilla.StructureSpawnEvent;
+import eruza.structureids.vanilla.UpdateVanillaChest;
 
 @Mod(modid = StructureIds.MODID, version = StructureIds.VERSION)
 public class StructureIds
@@ -25,5 +26,6 @@ public class StructureIds
 		}
 		MinecraftForge.TERRAIN_GEN_BUS.register(new StructureSpawnEvent());
 		MinecraftForge.TERRAIN_GEN_BUS.register(new ChunkPopulationEvent());
+		FMLCommonHandler.instance().bus().register(new UpdateVanillaChest());
 	}
 }
