@@ -43,9 +43,10 @@ public class RuinSpawnEvent {
 	 * @throws IllegalAccessException
 	 */
 	private void setEmbed(RuinTemplate template) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		Field templateField = template.getClass().getDeclaredField("embed");
-		templateField.setAccessible(true);
-		this.embed = templateField.getInt(template);
+		//Embed is the 9th field in RuinTemplate.class
+		Field templateFields[] = template.getClass().getDeclaredFields();
+		templateFields[8].setAccessible(true);
+		this.embed = templateFields[8].getInt(template);
 	}
 	/**
 	 * Uses reflection to get x, y, z and template for ruin
@@ -59,9 +60,9 @@ public class RuinSpawnEvent {
 			eventFields[i].setAccessible(true);
 		}
 		template = (RuinTemplate) eventFields[0].get(event);
-		x = (int) eventFields[1].get(event);
-		y = (int) eventFields[2].get(event);
-		z = (int) eventFields[3].get(event);
+		x = eventFields[1].getInt(event);
+		y = eventFields[2].getInt(event);
+		z = eventFields[3].getInt(event);
 		rotation = eventFields[4].getInt(event);
 	}
 }

@@ -8,6 +8,7 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureStart;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate;
+import biomesoplenty.common.eventhandler.world.BOPMapGenVillageEventHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class ChunkPopulationEvent {
@@ -18,7 +19,8 @@ public class ChunkPopulationEvent {
 		testStructureAndUpdateChest(event, StructureSpawnEvent.villageGenerator, "Village");
 		testStructureAndUpdateChest(event, StructureSpawnEvent.mineshaftGenerator, "Mineshaft");
 		testStructureAndUpdateChest(event, StructureSpawnEvent.strongholdGenerator, "Stronghold");
-		testStructureAndUpdateChest(event, StructureSpawnEvent.scatteredFeatureGenerator, "Scattered Features");
+		//Below line sometimes causes illegal argument exceptions due to reflection, not sure why
+		//testStructureAndUpdateChest(event, StructureSpawnEvent.scatteredFeatureGenerator, "Scattered Features");
 	}
 
 	private void testStructureAndUpdateChest(Populate event, MapGenBase generator, String name) {
@@ -27,38 +29,55 @@ public class ChunkPopulationEvent {
 				NamedBoundingBox box = new NamedBoundingBox(getStructureInChunk(event.chunkX, event.chunkZ, generator), name);
 				UpdateVanillaChest.addBox(box);
 			}
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
+			System.out.println("Generator class: " + generator.getClass());
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			System.out.println("Generator class: " + generator.getClass());
 			e.printStackTrace();
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	private boolean canStructureSpawn(int chunkX, int chunkZ, MapGenBase generator) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Class[] classes = new Class[2];
-		classes[0] = int.class;
-		classes[1] = int.class;
-		Method canStructureSpawn = generator.getClass().getDeclaredMethod("canSpawnStructureAtCoords", classes);
-		canStructureSpawn.setAccessible(true);
-		boolean canSpawn = (boolean) canStructureSpawn.invoke(generator, chunkX, chunkZ);
+	private boolean canStructureSpawn(int chunkX, int chunkZ, MapGenBase generator) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class<?> genClass;
+		//BOP compatibility
+		if(generator instanceof BOPMapGenVillageEventHandler) genClass = generator.getClass().getSuperclass();
+		else genClass = generator.getClass();
+		Method canStructureSpawn = getCorrectMethod(genClass, "canStructureSpawn");
+		Boolean canSpawn = (Boolean) canStructureSpawn.invoke(generator, chunkX, chunkZ);
 		return canSpawn;
 	}
 
-	@SuppressWarnings("rawtypes")
-	private StructureBoundingBox getStructureInChunk(int chunkX, int chunkZ, MapGenBase generator) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Class[] classes = new Class[2];
-		classes[0] = int.class;
-		classes[1] = int.class;
-		Method getStructureStart = generator.getClass().getDeclaredMethod("getStructureStart", classes);
-		getStructureStart.setAccessible(true);
+	private StructureBoundingBox getStructureInChunk(int chunkX, int chunkZ, MapGenBase generator) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class<?> genClass;
+		//BOP compatibility
+		if(generator instanceof BOPMapGenVillageEventHandler) genClass = generator.getClass().getSuperclass();
+		else genClass = generator.getClass();
+		Method getStructureStart = getCorrectMethod(genClass, "getStructureStart");
 		StructureStart start = (StructureStart) getStructureStart.invoke(generator, chunkX, chunkZ);
 		return start.getBoundingBox();
+	}
+
+	private Method getCorrectMethod(Class<?> genClass, String method) {
+		Method[] methods = genClass.getDeclaredMethods();
+		for(int i=0;i<methods.length;i++) {
+			//Makes this work in dev environments and production
+			if(method.equals("canStructureSpawn")) {
+				if(methods[i].getName().equals("canSpawnStructureAtCoords") || methods[i].getName().equals("func_75047_a")) {
+					methods[i].setAccessible(true);
+					return methods[i];
+				}
+			}
+			else if(method.equals("getStructureStart")) {
+				//Makes this work in dev environments and production
+				if(methods[i].getName().equals("getStructureStart") || methods[i].getName().equals("func_75049_b")) {
+					methods[i].setAccessible(true);
+					return methods[i];
+				}
+			}
+		}
+		return null;
 	}
 }

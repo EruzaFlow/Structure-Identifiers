@@ -1,5 +1,7 @@
 package eruza.structureids;
 
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -11,11 +13,13 @@ import eruza.structureids.vanilla.ChunkPopulationEvent;
 import eruza.structureids.vanilla.StructureSpawnEvent;
 import eruza.structureids.vanilla.UpdateVanillaChest;
 
-@Mod(modid = StructureIds.MODID, version = StructureIds.VERSION)
+@Mod(modid = StructureIds.MODID, name = StructureIds.NAME, version = StructureIds.VERSION)
 public class StructureIds
 {
-	public static final String MODID = "examplemod";
-	public static final String VERSION = "1.0";
+	public static final String MODID = "StructIds";
+	public static final String NAME = "Structure Identifiers";
+	public static final String VERSION = "0.1";
+	
 
 	@EventHandler
 	public void init(FMLInitializationEvent event)
@@ -27,5 +31,11 @@ public class StructureIds
 		MinecraftForge.TERRAIN_GEN_BUS.register(new StructureSpawnEvent());
 		MinecraftForge.TERRAIN_GEN_BUS.register(new ChunkPopulationEvent());
 		FMLCommonHandler.instance().bus().register(new UpdateVanillaChest());
+	}
+	
+	public static ItemStack getItemStack(String name) {
+		ItemStack stack = new ItemStack(Items.paper);
+		stack.setStackDisplayName(name);
+		return stack;
 	}
 }

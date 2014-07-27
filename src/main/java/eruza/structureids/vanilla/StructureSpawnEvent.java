@@ -18,29 +18,23 @@ public class StructureSpawnEvent {
 	@SubscribeEvent
 	public void structureSpawn(InitMapGenEvent event)
 	{
-		//System.out.println("Vanilla gen event has biome: " + event.biome);
-		System.out.println("Vanilla gen event has type: " + event.type);
 		if(event.newGen instanceof MapGenStructure) {
-			MapGenStructure mapGenStruct = (MapGenStructure) event.originalGen;
+			MapGenStructure mapGenStruct = (MapGenStructure) event.newGen;
 			newMethod(mapGenStruct);
 		}
 	}
 	
 	private void newMethod(MapGenStructure mapGenStruct) {
 		if(mapGenStruct instanceof MapGenStronghold) {
-			System.out.println("Stronghold gen captured");
 			strongholdGenerator = (MapGenStronghold) mapGenStruct;
 		}
 		if(mapGenStruct instanceof MapGenVillage) {
-			System.out.println("Village gen captured");
 			villageGenerator = (MapGenVillage) mapGenStruct;
 		}
 		if(mapGenStruct instanceof MapGenMineshaft) {
-			System.out.println("Mineshaft gen captured");
 			mineshaftGenerator = (MapGenMineshaft) mapGenStruct;
 		}
 		if(mapGenStruct instanceof MapGenScatteredFeature) {
-			System.out.println("ScatteredFeature gen captured");
 			scatteredFeatureGenerator = (MapGenScatteredFeature) mapGenStruct;
 		}
 	}

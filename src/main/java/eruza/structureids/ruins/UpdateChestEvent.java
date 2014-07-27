@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
@@ -14,6 +12,7 @@ import atomicstryker.ruins.common.RuinData;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import eruza.structureids.StructureIds;
 
 public class UpdateChestEvent {
 
@@ -62,11 +61,9 @@ public class UpdateChestEvent {
 					TileEntity tileEntity = world.getTileEntity(x, y, z);
 					if (tileEntity instanceof TileEntityChest) {
 						TileEntityChest chest = (TileEntityChest) tileEntity;
-						ItemStack stack = new ItemStack(Items.paper);
-						stack.setStackDisplayName(data.name.replace(".tml", "").replace("_", " "));
+						String name = data.name.replace(".tml", "").replace("_", " ");
 						Random random = new Random();
-						chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), stack);
-						//System.out.println("FOUND CHEST AT " + x + " " + y + " " + z + " in " + data);
+						chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), StructureIds.getItemStack(name));
 						return true;
 					}
 				}
