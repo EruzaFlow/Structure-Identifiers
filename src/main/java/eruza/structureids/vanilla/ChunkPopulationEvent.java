@@ -10,9 +10,9 @@ import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate;
 import biomesoplenty.common.eventhandler.world.BOPMapGenVillageEventHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import eruza.structureids.StructureIds;
 
 public class ChunkPopulationEvent {
-	boolean flag = true;
 
 	@SubscribeEvent
 	public void populateEvent(PopulateChunkEvent.Populate event) {
@@ -43,7 +43,7 @@ public class ChunkPopulationEvent {
 	private boolean canStructureSpawn(int chunkX, int chunkZ, MapGenBase generator) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Class<?> genClass;
 		//BOP compatibility
-		if(generator instanceof BOPMapGenVillageEventHandler) genClass = generator.getClass().getSuperclass();
+		if(StructureIds.isBopInstalled && generator instanceof BOPMapGenVillageEventHandler) genClass = generator.getClass().getSuperclass();
 		else genClass = generator.getClass();
 		Method canStructureSpawn = getCorrectMethod(genClass, "canStructureSpawn");
 		Boolean canSpawn = (Boolean) canStructureSpawn.invoke(generator, chunkX, chunkZ);
@@ -53,7 +53,7 @@ public class ChunkPopulationEvent {
 	private StructureBoundingBox getStructureInChunk(int chunkX, int chunkZ, MapGenBase generator) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Class<?> genClass;
 		//BOP compatibility
-		if(generator instanceof BOPMapGenVillageEventHandler) genClass = generator.getClass().getSuperclass();
+		if(StructureIds.isBopInstalled && generator instanceof BOPMapGenVillageEventHandler) genClass = generator.getClass().getSuperclass();
 		else genClass = generator.getClass();
 		Method getStructureStart = getCorrectMethod(genClass, "getStructureStart");
 		StructureStart start = (StructureStart) getStructureStart.invoke(generator, chunkX, chunkZ);

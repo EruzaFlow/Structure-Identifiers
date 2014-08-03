@@ -20,22 +20,24 @@ public class UpdateChestEvent {
 	private ArrayList<RuinData> deletedRuinData = new ArrayList<RuinData>();
 	private World world;
 	private int counter;
+	private final boolean debug = true;
 
 
 	@SubscribeEvent
 	public void tickEvent(TickEvent.WorldTickEvent event) {
 		if(ruinData.size() == 0) counter = 0;
+		else counter++;
+		
 		if(event.phase == Phase.END) {
 			world = event.world;
 			Iterator<RuinData> it = ruinData.iterator();
 			while(it.hasNext())
 			{
-				counter++;
 				RuinData data = it.next();
 				if(findChestCoords(data)) deletedRuinData.add(data);
 				else if(counter>50) {
-					if(data.yMin < 125) {
-						System.out.println("ERROR: Counter > 50");
+					if(debug) {
+						System.out.println("ERROR: Finding ruins chest failed");
 						System.out.println("Total ruin structures looking for chests: " + ruinData.size());
 						System.out.println("Current: " + data);
 						System.out.println("Removing " + data.name);
@@ -64,6 +66,7 @@ public class UpdateChestEvent {
 						String name = data.name.replace(".tml", "").replace("_", " ");
 						Random random = new Random();
 						chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), StructureIds.getItemStack(name));
+						if(debug) System.out.println("Found chest at " + x + " " + y + " " + z + " for " + name);
 						return true;
 					}
 				}

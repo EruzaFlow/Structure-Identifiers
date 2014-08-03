@@ -26,7 +26,7 @@ public class UpdateVanillaChest {
 	@SubscribeEvent
 	public void tickEvent(TickEvent.WorldTickEvent event) {
 		if(boundingBoxes.size() == 0) counter = 0;
-		if(event.phase == Phase.END) {
+		if(counter % 10 == 0 && event.phase == Phase.END) {
 			world = event.world;
 			Iterator<NamedBoundingBox> it = boundingBoxes.iterator();
 			while(it.hasNext())
@@ -62,7 +62,7 @@ public class UpdateVanillaChest {
 					if (tileEntity instanceof TileEntityChest) {
 						placeItemInChest(box, x, y, z);
 						return true;
-					}						
+					}
 				}
 			}
 		}

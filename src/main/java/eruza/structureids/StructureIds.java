@@ -18,7 +18,8 @@ public class StructureIds
 {
 	public static final String MODID = "StructIds";
 	public static final String NAME = "Structure Identifiers";
-	public static final String VERSION = "0.1";
+	public static final String VERSION = "0.15";
+	public static boolean isBopInstalled = false;
 	
 
 	@EventHandler
@@ -28,6 +29,7 @@ public class StructureIds
 			MinecraftForge.EVENT_BUS.register(new RuinSpawnEvent());
 			FMLCommonHandler.instance().bus().register(new UpdateChestEvent());
 		}
+		if(cpw.mods.fml.common.Loader.isModLoaded("BiomesOPlenty")) isBopInstalled = true;
 		MinecraftForge.TERRAIN_GEN_BUS.register(new StructureSpawnEvent());
 		MinecraftForge.TERRAIN_GEN_BUS.register(new ChunkPopulationEvent());
 		FMLCommonHandler.instance().bus().register(new UpdateVanillaChest());
