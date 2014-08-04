@@ -10,7 +10,6 @@ public class RuinSpawnEvent {
 	public void ruinSpawn(EventRuinTemplateSpawn event)
 	{
 		if(!event.isPrePhase) {
-			System.out.println(event.template.getName() + " " + event.x + " " + event.y + " " + event.z);
 			RuinData data = event.template.getRuinData(event.x, event.y, event.z, event.rotation);
 			UpdateChestEvent.ruinData.add(data);
 		}

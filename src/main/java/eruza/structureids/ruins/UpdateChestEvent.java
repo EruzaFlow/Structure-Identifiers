@@ -11,7 +11,6 @@ import net.minecraft.world.World;
 import atomicstryker.ruins.common.RuinData;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import eruza.structureids.StructureIds;
 
 public class UpdateChestEvent {
@@ -27,8 +26,8 @@ public class UpdateChestEvent {
 	public void tickEvent(TickEvent.WorldTickEvent event) {
 		if(ruinData.size() == 0) counter = 0;
 		else counter++;
-		
-		if(event.phase == Phase.END) {
+
+		if(counter > 0 && counter % 10 == 0) {
 			world = event.world;
 			Iterator<RuinData> it = ruinData.iterator();
 			while(it.hasNext())
@@ -36,14 +35,9 @@ public class UpdateChestEvent {
 				RuinData data = it.next();
 				if(findChestCoords(data)) deletedRuinData.add(data);
 				else if(counter>50) {
-					if(debug) {
-						System.out.println("ERROR: Finding ruins chest failed");
-						System.out.println("Total ruin structures looking for chests: " + ruinData.size());
-						System.out.println("Current: " + data);
-						System.out.println("Removing " + data.name);
-					}
+					if(debug) System.out.println("ERROR: Failed to find chest at " + data);
 					deletedRuinData.add(data);
-					counter = 0;
+					counter = 30;
 				}
 			}
 			ruinData.removeAll(deletedRuinData);
