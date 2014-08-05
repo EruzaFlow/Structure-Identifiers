@@ -14,6 +14,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import eruza.structureids.StructureIds;
+import eruza.structureids.util.SidLog;
 
 public class LocateVanillaChest {
 
@@ -40,7 +41,7 @@ public class LocateVanillaChest {
 				if(box.name.equals("Mineshaft") && findMineshaftRail(box)) deletedBoxes.add(box);
 				if((box.name.equals("Scattered Features") || box.name.equals("Stronghold")) && findChestCoords(box)) deletedBoxes.add(box);
 				if(counter>timeout) {
-					if(StructureIds.debug) System.out.println("ERROR: Failed to find chest at " + box);
+					SidLog.info("ERROR: Failed to find chest at " + box);
 					deletedBoxes.add(box);
 					counter = 30;
 				}
@@ -74,7 +75,6 @@ public class LocateVanillaChest {
 		int y = box.minY;
 		for(int x=box.minX;x<=box.maxX;x++) {
 			for(int z=box.minZ;z<=box.maxZ;z++) {
-				System.out.print("Biome at " + x + " " + z);
 				getRoadTypeForBiome(world.getBiomeGenForCoords(x, z));
 				if (world.getBlock(x, y, z) == Blocks.gravel || world.getBlock(x, y, z) == Blocks.sandstone) {
 					y = y + 1;
@@ -89,9 +89,7 @@ public class LocateVanillaChest {
 	}
 
 	private Block getRoadTypeForBiome(BiomeGenBase biome) {
-		//TODO Finish this, for BOP
-		//System.out.println(" is named " + biome.biomeName + " and id " + biome.biomeID);
-		//returns "Desert"
+		//TODO Finish this, for BOP; biome.biomeName returns Desert
 		return null;
 
 	}
@@ -116,7 +114,7 @@ public class LocateVanillaChest {
 
 	private void placeItemInChest(NamedBoundingBox box, int x, int y, int z) {
 		TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
-		if(StructureIds.debug) System.out.println("Found chest at " + x + " " + y + " " + z + " for " + box.name);
+		SidLog.info("Found chest at " + x + " " + y + " " + z + " for " + box.name);
 		Random random = new Random();
 		chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), StructureIds.getItemStack(box.name));
 	}

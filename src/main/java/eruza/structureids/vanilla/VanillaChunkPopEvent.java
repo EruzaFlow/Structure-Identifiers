@@ -8,10 +8,10 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureStart;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate;
-import net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType;
 import biomesoplenty.common.eventhandler.world.BOPMapGenVillageEventHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import eruza.structureids.StructureIds;
+import eruza.structureids.util.SidLog;
 
 public class VanillaChunkPopEvent {
 
@@ -28,13 +28,7 @@ public class VanillaChunkPopEvent {
 	private void listInfo(Populate event) {
 		//TODO Check that each type happens for every chunk
 		//If so add filter for a single type for efficiency
-		//possibly switch this to a generator like roguelike?
-		if(event.type == EventType.DUNGEON) {
-			
-		}
-		if(event.type == EventType.CUSTOM) {
-			System.out.println("Custome event detected!");
-		}
+		//possibly switch this to a generator instead of an event
 	}
 
 	private void testStructureAndUpdateChest(Populate event, MapGenBase generator, String name) {
@@ -44,13 +38,11 @@ public class VanillaChunkPopEvent {
 				LocateVanillaChest.addBox(box);
 			}
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			SidLog.error(e.toString());
 		} catch (IllegalArgumentException e) {
-			System.out.println("Generator class: " + generator.getClass());
-			e.printStackTrace();
+			SidLog.error(e.toString());
 		} catch (InvocationTargetException e) {
-			System.out.println("Generator class: " + generator.getClass());
-			e.printStackTrace();
+			SidLog.error(e.toString());
 		}
 	}
 

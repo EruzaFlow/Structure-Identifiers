@@ -18,7 +18,6 @@ public class MapGen {
 	@SubscribeEvent
 	public void initMapGen(InitMapGenEvent event)
 	{
-		System.out.println("TYPE OF GEN: " + event.type);
 		if(event.newGen instanceof MapGenStructure) {
 			MapGenStructure mapGenStruct = (MapGenStructure) event.newGen;
 			newMethod(mapGenStruct);

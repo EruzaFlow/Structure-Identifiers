@@ -9,6 +9,7 @@ import atomicstryker.ruins.common.EventRuinTemplateSpawn;
 import atomicstryker.ruins.common.RuinData;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import eruza.structureids.StructureIds;
+import eruza.structureids.util.SidLog;
 
 public class RuinSpawnEvent {
 
@@ -18,7 +19,7 @@ public class RuinSpawnEvent {
 		if(!event.isPrePhase && event.template != null) {
 			RuinData data = event.template.getRuinData(event.x, event.y, event.z, event.rotation);
 			if(!findChestCoords(event.world, data) && StructureIds.debug) {
-				System.out.println("ERROR: Failed to find chest at " + data);
+				SidLog.info("Failed to find chest at " + data);
 			}
 		}
 	}
@@ -39,7 +40,7 @@ public class RuinSpawnEvent {
 						String name = data.name.replace(".tml", "").replace("_", " ");
 						Random random = new Random();
 						chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), StructureIds.getItemStack(name));
-						if(StructureIds.debug) System.out.println("Found chest at " + x + " " + y + " " + z + " for " + name);
+						SidLog.info("Found chest at " + x + " " + y + " " + z + " for " + name);
 						return true;
 					}
 				}
