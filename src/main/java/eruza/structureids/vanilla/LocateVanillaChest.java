@@ -5,16 +5,17 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import eruza.structureids.StructureIds;
 
-public class UpdateVanillaChest {
+public class LocateVanillaChest {
 
 	private static CopyOnWriteArrayList<NamedBoundingBox> boundingBoxes = new CopyOnWriteArrayList<NamedBoundingBox>();
 	private ArrayList<NamedBoundingBox> deletedBoxes = new ArrayList<NamedBoundingBox>();
@@ -26,7 +27,9 @@ public class UpdateVanillaChest {
 	@SubscribeEvent
 	public void tickEvent(TickEvent.WorldTickEvent event) {
 		if(boundingBoxes.size() == 0) counter = 0;
-		if(counter % 10 == 0 && event.phase == Phase.END) {
+		else counter++;
+
+		if(counter > 0 && counter % 10 == 0) {
 			world = event.world;
 			Iterator<NamedBoundingBox> it = boundingBoxes.iterator();
 			while(it.hasNext())
@@ -37,11 +40,9 @@ public class UpdateVanillaChest {
 				if(box.name.equals("Mineshaft") && findMineshaftRail(box)) deletedBoxes.add(box);
 				if((box.name.equals("Scattered Features") || box.name.equals("Stronghold")) && findChestCoords(box)) deletedBoxes.add(box);
 				if(counter>timeout) {
-					System.out.println("ERROR: Counter > " + timeout);
-					System.out.println("Total vanilla structures looking for chests: " + boundingBoxes.size());
-					System.out.println("Removing " + box);
+					if(StructureIds.debug) System.out.println("ERROR: Failed to find chest at " + box);
 					deletedBoxes.add(box);
-					counter = 0;
+					counter = 30;
 				}
 			}
 			boundingBoxes.removeAll(deletedBoxes);
@@ -73,16 +74,26 @@ public class UpdateVanillaChest {
 		int y = box.minY;
 		for(int x=box.minX;x<=box.maxX;x++) {
 			for(int z=box.minZ;z<=box.maxZ;z++) {
+				System.out.print("Biome at " + x + " " + z);
+				getRoadTypeForBiome(world.getBiomeGenForCoords(x, z));
 				if (world.getBlock(x, y, z) == Blocks.gravel || world.getBlock(x, y, z) == Blocks.sandstone) {
 					y = y + 1;
 					if(world.getBlock(x, y, z) == Blocks.air && world.setBlock(x, y, z, Blocks.chest)) {
 						placeItemInChest(box, x, y, z);
-						return true;					
+						return true;
 					}					
 				}						
 			}
 		}
 		return false;
+	}
+
+	private Block getRoadTypeForBiome(BiomeGenBase biome) {
+		//TODO Finish this, for BOP
+		//System.out.println(" is named " + biome.biomeName + " and id " + biome.biomeID);
+		//returns "Desert"
+		return null;
+
 	}
 
 	private boolean findMineshaftRail(NamedBoundingBox box) {
@@ -105,18 +116,18 @@ public class UpdateVanillaChest {
 
 	private void placeItemInChest(NamedBoundingBox box, int x, int y, int z) {
 		TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
-		System.out.println("FOUND CHEST AT " + x + " " + y + " " + z + " in " + box);
+		if(StructureIds.debug) System.out.println("Found chest at " + x + " " + y + " " + z + " for " + box.name);
 		Random random = new Random();
 		chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), StructureIds.getItemStack(box.name));
 	}
 
 	public static void addBox(NamedBoundingBox box) {
-		if(boxHasNoIntersects(box)) {
+		if(hasNoIntersects(box)) {
 			boundingBoxes.add(box);
 		}
 	}
 
-	private static boolean boxHasNoIntersects(NamedBoundingBox box) {
+	private static boolean hasNoIntersects(NamedBoundingBox box) {
 		Iterator<NamedBoundingBox> it = boundingBoxes.iterator();
 		while(it.hasNext()) if(box.intersectsWith(it.next())) return false;
 		return true;

@@ -8,7 +8,7 @@ import net.minecraft.world.gen.structure.MapGenVillage;
 import net.minecraftforge.event.terraingen.InitMapGenEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
-public class StructureSpawnEvent {
+public class MapGen {
     protected static MapGenStronghold strongholdGenerator;
     protected static MapGenVillage villageGenerator;
     protected static MapGenMineshaft mineshaftGenerator;
@@ -16,8 +16,9 @@ public class StructureSpawnEvent {
     
 
 	@SubscribeEvent
-	public void structureSpawn(InitMapGenEvent event)
+	public void initMapGen(InitMapGenEvent event)
 	{
+		System.out.println("TYPE OF GEN: " + event.type);
 		if(event.newGen instanceof MapGenStructure) {
 			MapGenStructure mapGenStruct = (MapGenStructure) event.newGen;
 			newMethod(mapGenStruct);

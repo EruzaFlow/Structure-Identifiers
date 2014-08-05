@@ -8,26 +8,40 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureStart;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate;
+import net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType;
 import biomesoplenty.common.eventhandler.world.BOPMapGenVillageEventHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import eruza.structureids.StructureIds;
 
-public class ChunkPopulationEvent {
+public class VanillaChunkPopEvent {
 
 	@SubscribeEvent
 	public void populateEvent(PopulateChunkEvent.Populate event) {
-		testStructureAndUpdateChest(event, StructureSpawnEvent.villageGenerator, "Village");
-		testStructureAndUpdateChest(event, StructureSpawnEvent.mineshaftGenerator, "Mineshaft");
-		testStructureAndUpdateChest(event, StructureSpawnEvent.strongholdGenerator, "Stronghold");
+		listInfo(event);
+		testStructureAndUpdateChest(event, MapGen.villageGenerator, "Village");
+		testStructureAndUpdateChest(event, MapGen.mineshaftGenerator, "Mineshaft");
+		testStructureAndUpdateChest(event, MapGen.strongholdGenerator, "Stronghold");
 		//Below line sometimes causes illegal argument exceptions due to reflection, not sure why
-		//testStructureAndUpdateChest(event, StructureSpawnEvent.scatteredFeatureGenerator, "Scattered Features");
+		//listInfo(event, MapGen.scatteredFeatureGenerator, "Scattered Features");
+	}
+
+	private void listInfo(Populate event) {
+		//TODO Check that each type happens for every chunk
+		//If so add filter for a single type for efficiency
+		//possibly switch this to a generator like roguelike?
+		if(event.type == EventType.DUNGEON) {
+			
+		}
+		if(event.type == EventType.CUSTOM) {
+			System.out.println("Custome event detected!");
+		}
 	}
 
 	private void testStructureAndUpdateChest(Populate event, MapGenBase generator, String name) {
 		try {
 			if(canStructureSpawn(event.chunkX, event.chunkZ, generator)) {
 				NamedBoundingBox box = new NamedBoundingBox(getStructureInChunk(event.chunkX, event.chunkZ, generator), name);
-				UpdateVanillaChest.addBox(box);
+				LocateVanillaChest.addBox(box);
 			}
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();

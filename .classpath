@@ -6,5 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/forgegradle"/>
 	<classpathentry kind="lib" path="/Ruins/bin"/>
 	<classpathentry kind="lib" path="/BiomesOPlenty/bin"/>
+	<classpathentry kind="lib" path="/Roguelike/bin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
