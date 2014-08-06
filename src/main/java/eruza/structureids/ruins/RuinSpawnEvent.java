@@ -54,7 +54,7 @@ public class RuinSpawnEvent {
 						TileEntityChest chest = (TileEntityChest) tileEntity;
 						String name = data.name.replace(".tml", "").replace("_", " ");
 						Random random = new Random();
-						chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), StructureIds.getItemStack(name));
+						chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), StructureIds.getKeyedToken(name));
 						SidLog.info("Found chest at " + x + " " + y + " " + z + " for " + name);
 						return true;
 					}

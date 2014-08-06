@@ -54,3 +54,7 @@ gradlew
 gradlew.bat
 libs/bop.jar
 libs/ruins.jar
+sidtoken.pdn
+bin/assets/structids/lang/en_US.lang
+bin/assets/structids/textures/items/sidtoken.png
+libs/rogue.jar

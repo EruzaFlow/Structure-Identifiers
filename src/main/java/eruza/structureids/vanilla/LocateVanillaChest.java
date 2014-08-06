@@ -116,7 +116,7 @@ public class LocateVanillaChest {
 		TileEntityChest chest = (TileEntityChest) world.getTileEntity(x, y, z);
 		SidLog.info("Found chest at " + x + " " + y + " " + z + " for " + box.name);
 		Random random = new Random();
-		chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), StructureIds.getItemStack(box.name));
+		chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), StructureIds.getKeyedToken(box.name));
 	}
 
 	public static void addBox(NamedBoundingBox box) {

@@ -64,7 +64,7 @@ public class Scanner {
 			SidLog.info("Failed to find chest at "  + SidLog.coordToString(x, y, z) + " for " + name );
 			return false;
 		}
-		chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), StructureIds.getItemStack(name));
+		chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), StructureIds.getKeyedToken(name));
 		SidLog.info("Found chest at " + chest.xCoord + " " + chest.yCoord + " " + chest.zCoord + " for " + name);
 		return true;
 	}
