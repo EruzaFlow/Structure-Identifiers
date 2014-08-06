@@ -22,4 +22,8 @@ public class SidLog {
 	public static void warn(String msg) {
 		log(Level.WARN, msg);
 	}
+
+	public static String coordToString(int x, int y, int z) {
+		return x + " " + y + " " + z;
+	}
 }

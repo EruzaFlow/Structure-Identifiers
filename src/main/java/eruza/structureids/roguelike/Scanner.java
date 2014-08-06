@@ -18,13 +18,17 @@ public class Scanner {
 	HashSet<TileEntity> chests = new HashSet<TileEntity>();
 	World world;
 	ArrayList<Block> air = new ArrayList<Block>();
-	Block[] test = { Blocks.air, Blocks.sponge };
+	private static final Block pathBlock = Blocks.torch;
 	int rightTurns = 0, leftTurns = 0, steps = 0;
 	
 	public Scanner(World world) {
 		this.world = world;
 		air.add(Blocks.air);
-		if(StructureIds.debug) air.add(Blocks.sponge);
+		air.add(Blocks.brown_mushroom);
+		air.add(Blocks.red_mushroom_block);
+		air.add(Blocks.wooden_door);
+		air.add(Blocks.gravel);
+		if(StructureIds.debug) air.add(pathBlock);
 	}
 	
 	public void beginSearch(String dir, int x, int y, int z, int startX, int startZ) {
@@ -48,7 +52,7 @@ public class Scanner {
 			}
 			followWall();
 		}
-		SidLog.info("Finished searching dungeon");
+		SidLog.info("Finished searching dungeon " + steps + " steps");
 	}
 	
 	public boolean addItemToChest(String level) {
@@ -57,7 +61,7 @@ public class Scanner {
 		TileEntityChest chest = getRandomChest();
 		if(chest == null) {
 			//TODO Change this to utility method in main class give it 3 coords returns string; ugh;
-			SidLog.info("Failed to find chest at "  + x + " " + y + " " + z + " for " + name );
+			SidLog.info("Failed to find chest at "  + SidLog.coordToString(x, y, z) + " for " + name );
 			return false;
 		}
 		chest.setInventorySlotContents(random.nextInt(chest.getSizeInventory()), StructureIds.getItemStack(name));
@@ -68,12 +72,13 @@ public class Scanner {
 	public TileEntityChest getRandomChest() {
 		Random rand = new Random();
 		int i = rand.nextInt(chests.size());
+		SidLog.info("Found " + chests.size() + " chests picking #" + i);
 		return (TileEntityChest) chests.toArray()[i];
 	}
 
 	private void followWall() {
 		if(air.contains(getBlockAtLeft())) {
-			curDir = turnLeft();
+			turnLeft();
 			stepForward();
 		}
 		else if(air.contains(getBlockAhead(curDir))) stepForward();
@@ -82,14 +87,25 @@ public class Scanner {
 	
 	private void turnRight() {
 		rightTurns++;
-		if(curDir.equals("north")) curDir = "east";
-		if(curDir.equals("west")) curDir = "north";
-		if(curDir.equals("south")) curDir = "west";
-		if(curDir.equals("east")) curDir = "south";
+		curDir = lookRight();
+	}
+	
+	private void turnLeft() {
+		leftTurns++;
+		curDir = lookLeft();
+	}
+	
+	private String lookRight() {
+		if(curDir.equals("north")) return "east";
+		if(curDir.equals("west")) return "north";
+		if(curDir.equals("south")) return "west";
+		if(curDir.equals("east")) return "south";
+		SidLog.error("ERROR: MISNAMED DIRECTION: " + curDir);
+		return "north";
 	}
 
 	private Block getBlockAtLeft() {
-		return getBlockAhead(turnLeft());
+		return getBlockAhead(lookLeft());
 	}
 	
 	private Block getBlockAhead(String dir) {
@@ -106,27 +122,43 @@ public class Scanner {
 		return block;
 	}
 
-	private String turnLeft() {
-		leftTurns++;
+	private String lookLeft() {
 		if(curDir.equals("north")) return "west";
 		if(curDir.equals("west")) return "south";
 		if(curDir.equals("south")) return "east";
 		if(curDir.equals("east")) return "north";
 		SidLog.error("ERROR: MISNAMED DIRECTION: " + curDir);
-		return curDir;
+		return "north";
 	}
 	
 	private void stepForward() {
 		steps++;
-		if(StructureIds.debug) world.setBlock(x, y, z, Blocks.sponge);
+		if(StructureIds.debug && world.getBlock(x, y, z) == Blocks.air) world.setBlock(x, y, z, pathBlock);
 		if(curDir.equals("east")) x++;
 		if(curDir.equals("west")) x--;
 		if(curDir.equals("south")) z++;
 		if(curDir.equals("north")) z--;
 		rightTurns = 0;
 		leftTurns = 0;
+		checkForNextLevel();
 	}
 
-
-
+	private void checkForNextLevel() {
+		//bottom level
+		if(y==10) return;
+		int checkX = x;
+		int checkZ = z;
+		int checkY = y-1;
+		String right = lookRight();
+		if(right.equals("east")) checkX=checkX+2;
+		if(right.equals("west")) checkX=checkX-2;
+		if(right.equals("south")) checkZ=checkZ+2;
+		if(right.equals("north")) checkZ=checkZ-2;
+		if(world.getBlock(checkX, checkY, checkZ) == Blocks.stone_brick_stairs) {
+			//TODO Add check for metadata, filter inverted stairs
+			//TODO Stairs are not center of level, find center
+			SidLog.info("Found stairs at " + SidLog.coordToString(checkX, checkY, checkZ));
+			SidLog.info("Setting level 2 to " + SidLog.coordToString(checkX, checkY-10, checkZ));
+		}
+	}
 }

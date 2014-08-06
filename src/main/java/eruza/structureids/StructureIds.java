@@ -9,6 +9,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import eruza.structureids.roguelike.RoguelikeGenEvent;
 import eruza.structureids.ruins.RuinSpawnEvent;
+import eruza.structureids.util.SidLog;
 import eruza.structureids.vanilla.VanillaChunkPopEvent;
 import eruza.structureids.vanilla.MapGen;
 import eruza.structureids.vanilla.LocateVanillaChest;
@@ -20,7 +21,7 @@ public class StructureIds
 	public static final String NAME = "Structure Identifiers";
 	public static final String VERSION = "0.15";
 	public static boolean isBopInstalled = false;
-	public static final boolean debug = true;
+	public static boolean debug = true;
 	
 
 	@EventHandler
@@ -32,6 +33,7 @@ public class StructureIds
 		MinecraftForge.TERRAIN_GEN_BUS.register(new MapGen());
 		MinecraftForge.TERRAIN_GEN_BUS.register(new VanillaChunkPopEvent());
 		FMLCommonHandler.instance().bus().register(new LocateVanillaChest());
+		if(debug) SidLog.error("DEBUG MODE IS ENABLED; THIS IS BAD");
 	}
 	
 	public static ItemStack getItemStack(String name) {

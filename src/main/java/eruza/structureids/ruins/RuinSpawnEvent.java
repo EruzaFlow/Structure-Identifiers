@@ -16,12 +16,27 @@ public class RuinSpawnEvent {
 	@SubscribeEvent
 	public void ruinSpawn(EventRuinTemplateSpawn event)
 	{
-		if(!event.isPrePhase && event.template != null) {
+		boolean flag = true;
+		if(event.testingRuin && !StructureIds.debug) flag = false;
+		if(!event.isPrePhase &&	flag) {
+			if(event.template == null) {
+				SidLog.error("The template is null!");
+				printEvent(event);
+				return;
+			}
 			RuinData data = event.template.getRuinData(event.x, event.y, event.z, event.rotation);
 			if(!findChestCoords(event.world, data) && StructureIds.debug) {
 				SidLog.info("Failed to find chest at " + data);
 			}
 		}
+	}
+	
+	void printEvent(EventRuinTemplateSpawn event) {
+		System.out.print("Event " + event.template);
+		System.out.print(" " + event.testingRuin);
+		System.out.print(" " + event.isPrePhase);
+		System.out.print(" " + event.rotation);
+		System.out.println(" " + event.toString());
 	}
 
 	/**
